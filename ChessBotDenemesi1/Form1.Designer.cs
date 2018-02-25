@@ -51,6 +51,8 @@
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -157,7 +159,7 @@
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(5, 139);
+            this.textBox5.Location = new System.Drawing.Point(5, 113);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(40, 20);
             this.textBox5.TabIndex = 18;
@@ -166,7 +168,7 @@
             // button3
             // 
             this.button3.Enabled = false;
-            this.button3.Location = new System.Drawing.Point(134, 141);
+            this.button3.Location = new System.Drawing.Point(134, 115);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(79, 39);
             this.button3.TabIndex = 19;
@@ -176,7 +178,7 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(59, 138);
+            this.textBox6.Location = new System.Drawing.Point(59, 112);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(40, 20);
             this.textBox6.TabIndex = 20;
@@ -185,7 +187,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(46, 141);
+            this.label11.Location = new System.Drawing.Point(46, 115);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(16, 13);
             this.label11.TabIndex = 21;
@@ -193,7 +195,7 @@
             // 
             // textBox7
             // 
-            this.textBox7.Location = new System.Drawing.Point(79, 164);
+            this.textBox7.Location = new System.Drawing.Point(79, 138);
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(40, 20);
             this.textBox7.TabIndex = 22;
@@ -202,7 +204,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(2, 167);
+            this.label12.Location = new System.Drawing.Point(2, 141);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(71, 13);
             this.label12.TabIndex = 23;
@@ -238,11 +240,32 @@
             this.label10.TabIndex = 26;
             this.label10.Text = "Milliseconds";
             // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(5, 253);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(263, 238);
+            this.listBox1.TabIndex = 27;
+            // 
+            // button4
+            // 
+            this.button4.Enabled = false;
+            this.button4.Location = new System.Drawing.Point(88, 208);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(103, 39);
+            this.button4.TabIndex = 28;
+            this.button4.Text = "Show Rooks\' Possible Moves";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(280, 495);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.textBox8);
@@ -294,6 +317,8 @@
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button button4;
     }
 }
 

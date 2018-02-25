@@ -35,6 +35,8 @@ namespace ChessBotDenemesi1
             this.square = square;
             this.type = type;
             this.color = color;
+            this.squareLetter = square.Substring(0, 1);
+            this.squareNumber = Convert.ToInt32(square.Substring(1, 1));
             if (type.Substring(0, 1) == "P") typePrefix = ""; // Pawns arent written to moves. ie: move e4 doesnt have Pawn prefix.
             else if (type.Substring(0, 1) == "K")
             {
@@ -43,7 +45,6 @@ namespace ChessBotDenemesi1
             }
             else typePrefix = type.Substring(0, 1); // If our piece isnt Pawn or Knight or King. B for Bishop, R for Rook etc..
             for (int i = 0; i < squarePrefix.Length; i++) { if (squarePrefix[i] == squareLetter) squareLetterIndex = i; }
-            possibleMoves = GetPossibleMoves();
         }
 
         public abstract List<string> GetPossibleMoves();
@@ -331,6 +332,70 @@ namespace ChessBotDenemesi1
         {
             foreach (Piece p in Form1.AllPieces) { if (p.square == square) return p; }
             return null;
+        }
+        public List<string> GetMovesFromGoingRight()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = squareLetterIndex + 1; k < squarePrefix.Length; k++)
+            {
+                if (k == 8) break; // letterIndex 7 means h squares like h1-h2-...-h8. If we are at h square then dont look any more right. Because h is the rightest.
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[k] + squareNumber);
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[k] + squareNumber);
+                    break;
+                }
+                else _possibleMoves.Add(squarePrefix[k] + squareNumber); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
+        }
+        public List<string> GetMovesFromGoingLeft()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = squareLetterIndex - 1; k > -1; k--)
+            {
+                if (k == -1) break; // letterIndex 0 means a squares like a1-a2-...-a8. If we are at a square then dont look any more left. Because a is the leftest.
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[k] + squareNumber);
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[k] + squareNumber);
+                    break;
+                }
+                else _possibleMoves.Add(squarePrefix[k] + squareNumber); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
+        }
+        public List<string> GetMovesFromGoingUp()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = squareNumber + 1; k < 9; k++)
+            {
+                if (k == 9) break; // If we are at 8th square then dont look any more upper. Because 8th is the uppest.
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squareLetter + k);
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squareLetter + k);
+                    break;
+                }
+                else _possibleMoves.Add(squareLetter + k); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
+        }
+        public List<string> GetMovesFromGoingDown()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = squareNumber - 1; k > 0; k--)
+            {
+                if (k == 0) break; // If we are at 1st square then dont look any more down. Because 1st is the downest.
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squareLetter + k);
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squareLetter + k);
+                    break;
+                }
+                else _possibleMoves.Add(squareLetter + k); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
         }
     }
 }

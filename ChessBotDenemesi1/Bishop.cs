@@ -16,6 +16,9 @@ namespace ChessBotDenemesi1
 
         public override List<string> GetPossibleMoves()
         {
+            List<string> a = new List<string>();
+            a.Add("i9");
+            return a;
             return null;
         }
     }

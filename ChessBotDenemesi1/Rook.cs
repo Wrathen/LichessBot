@@ -20,80 +20,72 @@ namespace ChessBotDenemesi1
             Piece myKing = color == "White" ? GetWhiteKing() : GetBlackKing();
             if (MyKingsAttackers != null) // If our King is under attack
             {
-                if (MyKingsAttackers[0].squareLetterIndex == myKing.squareLetterIndex) // Is the attacker attacking my queen vertical?
-                {
-                    // biri bizim şaha saldırıyorsa önüne geçmeye çalışıcaz. Ama önüne geçmeye çalışırken önce
-                    // biz kale olduğumuz için anca sağ sol üst alt gidebiliyoruz. önce aynı letterdamıyız falan diye bakıcan
-                    // sonra eğer aynı letterdaysak falan önüne tek tek bakıcan, geçmen gereken yere kadar boşsa geç oraya.
-                    // veya son bakman gereken yerde asıl attackerın varsa, onu yiyebilirsin
-                }
-                else if (MyKingsAttackers[0].squareNumber == myKing.squareNumber) // Is the attacker attacking my queen horizontal?
-                {
+                List<string> PossibleMoves = new List<string>();
+                if (MyKingsAttackers[0].squareLetterIndex < squareLetterIndex) PossibleMoves.AddRange(GetMovesFromGoingLeft());
+                else if(MyKingsAttackers[0].squareLetterIndex > squareLetterIndex) PossibleMoves.AddRange(GetMovesFromGoingRight());
+                if(MyKingsAttackers[0].squareNumber < squareNumber) PossibleMoves.AddRange(GetMovesFromGoingDown());
+                else if(MyKingsAttackers[0].squareNumber > squareNumber) PossibleMoves.AddRange(GetMovesFromGoingUp());
 
-                }
-                return _possibleMoves;
-            } 
-            if (ProtectsKingFrom != null) // If there is an enemy Piece making us not able to move.
-            {
-                if (ProtectsKingFrom.squareLetterIndex == squareLetterIndex) // Check Horizontal
+                if (PossibleMoves.Contains(MyKingsAttackers[0].square)) // Can We Capture The Attacker?
                 {
-                    for(int i = 1; i < ProtectsKingFrom.squareLetterIndex + 1; i++)
+                    _possibleMoves.Add(MyKingsAttackers[0].square);
+                }
+
+                if ((MyKingsAttackers[0].type == "Bishop" || MyKingsAttackers[0].type == "Rook" || MyKingsAttackers[0].type == "Queen")) // Can We Go Between Them?
+                {
+                    int xDistance = MyKingsAttackers[0].squareLetterIndex - myKing.squareLetterIndex;
+                    int yDistance = MyKingsAttackers[0].squareNumber - myKing.squareNumber;
+                    for (int x = xDistance / Math.Abs(xDistance); Math.Abs(x) < Math.Abs(xDistance); x += x / Math.Abs(x))
                     {
-                        _possibleMoves.Add(squarePrefix[squareLetterIndex + i] + squareNumber); // We can go horizontal as far as to the enemy piece we are protecting our king from.
+                        for(int y = yDistance / Math.Abs(yDistance); Math.Abs(y) < Math.Abs(yDistance); y += y / Math.Abs(y))
+                        {
+                            if(PossibleMoves.Contains(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + y))
+                            {
+                                _possibleMoves.Add(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + y);
+                            }
+                        }
                     }
                 }
-                else if (ProtectsKingFrom.squareNumber == squareNumber) // Check Vertical
+                return _possibleMoves;
+            }
+            else if (ProtectsKingFrom != null) // If there is an enemy Piece making us not able to move.
+            {
+                if (ProtectsKingFrom.squareLetterIndex == squareLetterIndex) // Check Vertical
                 {
-                    for (int i = 1; i < ProtectsKingFrom.squareNumber + 1; i++)
+                    for (int i = 1; i < Math.Abs(squareNumber - ProtectsKingFrom.squareNumber + 1); i++)
                     {
-                        _possibleMoves.Add(squarePrefix[squareLetterIndex] + (squareNumber + i)); // We can go vertical as far as to the enemy piece we are protecting our king from.
+                        if(ProtectsKingFrom.squareNumber > squareNumber) // Attacker is above us.
+                        {
+                            _possibleMoves.Add(squarePrefix[squareLetterIndex] + (squareNumber + i));
+                        }
+                        else // Attacker is below us.
+                        {
+                            _possibleMoves.Add(squarePrefix[squareLetterIndex] + (squareNumber - i));
+                        }
+                    }
+                }
+                else if (ProtectsKingFrom.squareNumber == squareNumber) // Check Horizontal
+                {
+                    for (int i = 1; i < Math.Abs(squareLetterIndex - ProtectsKingFrom.squareLetterIndex + 1); i++)
+                    {
+                        if(ProtectsKingFrom.squareLetterIndex > squareNumber) // Attacker is Righter than us.
+                        {
+                            _possibleMoves.Add(squarePrefix[squareLetterIndex + i] + squareNumber);
+                        }
+                        else // Attacker is Lefter than us.
+                        {
+                            _possibleMoves.Add(squarePrefix[squareLetterIndex - i] + squareNumber);
+                        }
                     }
                 }
                 return _possibleMoves;
             }
-            for (int k = squareLetterIndex + 1; k < squarePrefix.Length; k++) // Gonna Check Right Squares
+            else
             {
-                if (k == 8) break; // letterIndex 7 means h squares like h1-h2-...-h8. If we are at h square then dont look any more right. Because h is the rightest.
-                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[k] + squareNumber);
-                if (PieceOnTheSquare != null) // If any Piece is on our way
-                {
-                    if(PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[k] + squareNumber);
-                    break;
-                }
-                else _possibleMoves.Add(squarePrefix[k] + squareNumber); // If no piece on our way then its a possible move
-            }
-            for (int k = squareLetterIndex - 1; k < squarePrefix.Length; k--) // Gonna Check Left Squares
-            {
-                if (k == -1) break; // letterIndex 0 means a squares like a1-a2-...-a8. If we are at a square then dont look any more left. Because a is the leftest.
-                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[k] + squareNumber);
-                if (PieceOnTheSquare != null) // If any Piece is on our way
-                {
-                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[k] + squareNumber);
-                    break;
-                }
-                else _possibleMoves.Add(squarePrefix[k] + squareNumber); // If no piece on our way then its a possible move
-            }
-            for (int k = squareNumber + 1; k < squarePrefix.Length; k++) // Gonna Check Up Squares
-            {
-                if (k == 9) break; // If we are at 8th square then dont look any more upper. Because 8th is the uppest.
-                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squareLetter + k);
-                if (PieceOnTheSquare != null) // If any Piece is on our way
-                {
-                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squareLetter + k);
-                    break;
-                }
-                else _possibleMoves.Add(squareLetter + k); // If no piece on our way then its a possible move
-            }
-            for (int k = squareNumber - 1; k < squarePrefix.Length; k--) // Gonna Check Down Squares
-            {
-                if (k == 0) break; // If we are at 1st square then dont look any more down. Because 1st is the downest.
-                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squareLetter + k);
-                if (PieceOnTheSquare != null) // If any Piece is on our way
-                {
-                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squareLetter + k);
-                    break;
-                }
-                else _possibleMoves.Add(squareLetter + k); // If no piece on our way then its a possible move
+                _possibleMoves.AddRange(GetMovesFromGoingUp());
+                _possibleMoves.AddRange(GetMovesFromGoingRight());
+                _possibleMoves.AddRange(GetMovesFromGoingDown());
+                _possibleMoves.AddRange(GetMovesFromGoingLeft());
             }
             return _possibleMoves;
         }

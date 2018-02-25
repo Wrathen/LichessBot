@@ -11,7 +11,16 @@ namespace ChessBotDenemesi1
     public partial class Form1 : Form
     {
         /* To Do List
-        ---> Açmaz ve Piecelerin Check halindeyken hareketleri
+        ---> Rook Is Perfectly Working.
+        ---> Bishop behaviour
+        ---> Then Queen Behaviour is just adding bishop and rook together.
+        ---> Then Knight Behaviour is gonna be tough since it goes like L
+        ---> Then King and Pawn Normal Movement
+        ---> Pawn En Passant Then King Castling.
+        ---> Pawn transforming into Queen at 8th or 1st squares.
+        ---> Checking Pieces Periodically , resetting Lists.
+        ---> Move Class
+        ---> more to be added.
         */
 
         // Mouse Click Simulations
@@ -82,6 +91,7 @@ namespace ChessBotDenemesi1
 
                     for (int tries = 0; tries < 6; tries++)
                     {
+                        piece = null;
                         SquareOfPiece = KatToSquare(katx, katy, Perspective);
                         if (ColorsMatch(toBeSeeked.GetPixel(specialCoordinates[tries,0] + (katx*64), specialCoordinates[tries, 1] + (reverseKatY * 64)), Color.FromArgb(255,255,255,255)))
                         {
@@ -131,8 +141,8 @@ namespace ChessBotDenemesi1
                                     }
                                     break;
                             }
-                            WhitePieces.Add(piece);
-                            AllPieces.Add(piece);
+                            if (piece != null) WhitePieces.Add(piece);
+                            if (piece != null) AllPieces.Add(piece);
                         }
                         else if (ColorsMatch(toBeSeeked.GetPixel(specialCoordinates[tries, 0] + (katx*64), specialCoordinates[tries, 1] + (reverseKatY * 64)), Color.FromArgb(255, 0, 0, 0)))
                         {
@@ -182,8 +192,8 @@ namespace ChessBotDenemesi1
                                     }
                                     break;
                             }
-                            BlackPieces.Add(piece);
-                            AllPieces.Add(piece);
+                            if (piece != null) BlackPieces.Add(piece);
+                            if (piece != null) AllPieces.Add(piece);
                         }
                     }
                 }
@@ -375,6 +385,8 @@ namespace ChessBotDenemesi1
             Bitmap theImageWeJustGot = new Bitmap("D:\\Images\\printscreen.jpg");
             GetChessBoardDetails(theImageWeJustGot);
             theImageWeJustGot.Dispose();
+            button3.Enabled = true;
+            button4.Enabled = true;
         } // Scan The Area Button
         private void button2_Click(object sender, EventArgs e)
         {
@@ -383,11 +395,22 @@ namespace ChessBotDenemesi1
             boardPositionX1 = Convert.ToInt32(textBox3.Text);
             boardPositionY1 = Convert.ToInt32(textBox4.Text);
             button1.Enabled = true;
-            button3.Enabled = true;
         } // Set The Area Button
         private void button3_Click(object sender, EventArgs e)
         {
             MakeMove(textBox5.Text, textBox6.Text, textBox7.Text);
         } // Make Move Button   
+        private void button4_Click(object sender, EventArgs e)
+        {
+            foreach (Piece p in WhitePieces)
+            {
+                if (p.type != "Rook") continue;
+                List<string> s = p.GetPossibleMoves();
+                foreach (string d in s)
+                {
+                    listBox1.Items.Add("The " + p.color + " Rook At " + p.square + " can go to " + d);
+                }
+            }
+        } // Show Rooks' Possible Moves
     }
 }

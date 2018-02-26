@@ -16,37 +16,16 @@ namespace ChessBotDenemesi1
         {
             List<string> _possibleMoves = new List<string>();
             ProtectsKingFrom = AmIProtectingMyKing();
-            MyKingsAttackers = IsKingUnderAttack(color);
             Piece myKing = color == "White" ? GetWhiteKing() : GetBlackKing();
-            if (MyKingsAttackers != null) // If our King is under attack
+            MyKingsAttacker = myKing.Attacker;
+            if (MyKingsAttacker != null) // If our King is under attack
             {
                 List<string> PossibleMoves = new List<string>();
-                if (MyKingsAttackers[0].squareLetterIndex < squareLetterIndex) PossibleMoves.AddRange(GetMovesFromGoingLeft());
-                else if(MyKingsAttackers[0].squareLetterIndex > squareLetterIndex) PossibleMoves.AddRange(GetMovesFromGoingRight());
-                if(MyKingsAttackers[0].squareNumber < squareNumber) PossibleMoves.AddRange(GetMovesFromGoingDown());
-                else if(MyKingsAttackers[0].squareNumber > squareNumber) PossibleMoves.AddRange(GetMovesFromGoingUp());
-
-                if (PossibleMoves.Contains(MyKingsAttackers[0].square)) // Can We Capture The Attacker?
-                {
-                    _possibleMoves.Add(MyKingsAttackers[0].square);
-                }
-
-                if ((MyKingsAttackers[0].type == "Bishop" || MyKingsAttackers[0].type == "Rook" || MyKingsAttackers[0].type == "Queen")) // Can We Go Between Them?
-                {
-                    int xDistance = MyKingsAttackers[0].squareLetterIndex - myKing.squareLetterIndex;
-                    int yDistance = MyKingsAttackers[0].squareNumber - myKing.squareNumber;
-                    for (int x = xDistance / Math.Abs(xDistance); Math.Abs(x) < Math.Abs(xDistance); x += x / Math.Abs(x))
-                    {
-                        for(int y = yDistance / Math.Abs(yDistance); Math.Abs(y) < Math.Abs(yDistance); y += y / Math.Abs(y))
-                        {
-                            if(PossibleMoves.Contains(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + y))
-                            {
-                                _possibleMoves.Add(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + y);
-                            }
-                        }
-                    }
-                }
-                return _possibleMoves;
+                if (MyKingsAttacker.squareLetterIndex < squareLetterIndex) PossibleMoves.AddRange(GetMovesFromGoingLeft());
+                else if(MyKingsAttacker.squareLetterIndex > squareLetterIndex) PossibleMoves.AddRange(GetMovesFromGoingRight());
+                if(MyKingsAttacker.squareNumber < squareNumber) PossibleMoves.AddRange(GetMovesFromGoingDown());
+                else if(MyKingsAttacker.squareNumber > squareNumber) PossibleMoves.AddRange(GetMovesFromGoingUp());
+                return GetMovesWhenUnderAttack(PossibleMoves, myKing);
             }
             else if (ProtectsKingFrom != null) // If there is an enemy Piece making us not able to move.
             {

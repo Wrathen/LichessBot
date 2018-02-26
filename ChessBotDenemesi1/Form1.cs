@@ -11,16 +11,10 @@ namespace ChessBotDenemesi1
     public partial class Form1 : Form
     {
         /* To Do List
-        ---> Rook Is Perfectly Working.
-        ---> Bishop behaviour
-        ---> Then Queen Behaviour is just adding bishop and rook together.
-        ---> Then Knight Behaviour is gonna be tough since it goes like L
-        ---> Then King and Pawn Normal Movement
-        ---> Pawn En Passant Then King Castling.
-        ---> Pawn transforming into Queen at 8th or 1st squares.
-        ---> Checking Pieces Periodically , resetting Lists.
-        ---> Move Class
-        ---> more to be added.
+        ---> When King is Checked, It becomes Red. Can't read when its red, it should be fixed.
+        ---> ProtectsKingFrom = AmIProtectingMyKing();  --> Every piece has it and its huge performance consuming.
+        ---> En Passant
+        ---> Castling
         */
 
         // Mouse Click Simulations
@@ -78,8 +72,18 @@ namespace ChessBotDenemesi1
             timer1.Interval = 1;
             timer1.Enabled = true;
         }   
+
+        // Gameplay Functions
+        void SetUpThings()
+        {
+            Piece.SetKingsAttackers("White");
+            Piece.SetKingsAttackers("Black");
+        }
         void GetChessBoardDetails(Bitmap toBeSeeked)
         {
+            AllPieces = new List<Piece>();
+            WhitePieces = new List<Piece>();
+            BlackPieces = new List<Piece>();
             Piece piece = null;
             string SquareOfPiece = "";
             string PieceColor = "";
@@ -198,6 +202,7 @@ namespace ChessBotDenemesi1
                     }
                 }
             }
+            SetUpThings();
         } 
         string GetLastMove(Bitmap currentBoard)
         {
@@ -376,7 +381,19 @@ namespace ChessBotDenemesi1
         {
             if(LastMove != GetLastMove(GetChessBoard(boardPositionX0,boardPositionX1,boardPositionY0,boardPositionY1)))
             {
-                MessageBox.Show("Sıra Sende!");
+                Bitmap chessBoard = GetChessBoard(boardPositionX0, boardPositionX1, boardPositionY0, boardPositionY1);
+                Bitmap theImageWeJustGot = new Bitmap("D:\\Images\\printscreen.jpg");
+                GetChessBoardDetails(theImageWeJustGot);
+                theImageWeJustGot.Dispose();
+                Random rand = new Random();
+                Piece piece = WhitePieces[rand.Next(WhitePieces.Count)];
+                List<string> moves = piece.GetPossibleMoves();
+                while (moves.Count < 1)
+                {
+                    piece = WhitePieces[rand.Next(WhitePieces.Count)];
+                    moves = piece.GetPossibleMoves();
+                }
+                MakeMove(piece.square, moves[rand.Next(moves.Count)], "");
             }
         } // Check If Move Was Made
         private void button1_Click(object sender, EventArgs e)
@@ -402,15 +419,27 @@ namespace ChessBotDenemesi1
         } // Make Move Button   
         private void button4_Click(object sender, EventArgs e)
         {
-            foreach (Piece p in WhitePieces)
+            listBox1.Items.Clear();
+            foreach (Piece p in AllPieces)
             {
-                if (p.type != "Rook") continue;
                 List<string> s = p.GetPossibleMoves();
                 foreach (string d in s)
                 {
-                    listBox1.Items.Add("The " + p.color + " Rook At " + p.square + " can go to " + d);
+                    listBox1.Items.Add("The " + p.color + " " + p.type + " At " + p.square + " can go to " + d);
                 }
             }
-        } // Show Rooks' Possible Moves
+        } // Show Possible Moves
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Random rand = new Random();
+            Piece piece = WhitePieces[rand.Next(WhitePieces.Count)];
+            List<string> moves = piece.GetPossibleMoves();
+            while(moves.Count < 1)
+            {
+                piece = WhitePieces[rand.Next(WhitePieces.Count)];
+                moves = piece.GetPossibleMoves();
+            }
+            MakeMove(piece.square, moves[rand.Next(moves.Count)], "");
+        } // Make Random Move
     }
 }

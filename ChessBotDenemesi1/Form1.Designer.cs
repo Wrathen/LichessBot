@@ -53,6 +53,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -168,9 +169,9 @@
             // button3
             // 
             this.button3.Enabled = false;
-            this.button3.Location = new System.Drawing.Point(134, 115);
+            this.button3.Location = new System.Drawing.Point(125, 115);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(79, 39);
+            this.button3.Size = new System.Drawing.Size(63, 39);
             this.button3.TabIndex = 19;
             this.button3.Text = "Make Move";
             this.button3.UseVisualStyleBackColor = true;
@@ -220,7 +221,7 @@
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(40, 20);
             this.textBox8.TabIndex = 24;
-            this.textBox8.Text = "3000";
+            this.textBox8.Text = "6000";
             // 
             // label9
             // 
@@ -251,19 +252,30 @@
             // button4
             // 
             this.button4.Enabled = false;
-            this.button4.Location = new System.Drawing.Point(88, 208);
+            this.button4.Location = new System.Drawing.Point(79, 208);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(103, 39);
             this.button4.TabIndex = 28;
-            this.button4.Text = "Show Rooks\' Possible Moves";
+            this.button4.Text = "Show Possible Moves";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(194, 115);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(79, 54);
+            this.button5.TabIndex = 29;
+            this.button5.Text = "Make Random Move";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(280, 495);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.label10);
@@ -319,6 +331,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
     }
 }
 

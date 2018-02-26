@@ -22,7 +22,9 @@ namespace ChessBotDenemesi1
         public static bool whiteIsUnderAttack = false;
         public static bool blackIsUnderAttack = false;
         public Piece ProtectsKingFrom = null;
-        public List<Piece> MyKingsAttackers = new List<Piece>();
+        public Piece MyKingsAttacker = null;
+        // King Special Variable
+        public Piece Attacker = null;
         // Some Variables Written Here for Maybe more optimisation? They are used in AmIProtectingMyKing Function.
         // So we dont constantly create more variables instead we create them once and store on every piece.
         private int diagonalDistance = 0;
@@ -57,6 +59,89 @@ namespace ChessBotDenemesi1
         {
             foreach (Piece p in Form1.BlackPieces) { if (p.type == "King") return p; }
             return null;
+        }
+
+        public List<string> GetMovesWhenUnderAttack(List<string> PossibleMoves, Piece myKing)
+        {
+            List<string> _possibleMoves = new List<string>();
+
+            if (PossibleMoves.Contains(MyKingsAttacker.square)) // Can We Capture The Attacker?
+            {
+                _possibleMoves.Add(MyKingsAttacker.square);
+            }
+
+            if ((MyKingsAttacker.type == "Bishop" || MyKingsAttacker.type == "Rook" || MyKingsAttacker.type == "Queen")) // Can We Go Between Them?
+            {
+                int xDistance = MyKingsAttacker.squareLetterIndex - myKing.squareLetterIndex;
+                int yDistance = MyKingsAttacker.squareNumber - myKing.squareNumber;
+                if (Math.Abs(xDistance) == Math.Abs(yDistance)) // Diagonal
+                {
+                    int diagonalDistance = Math.Abs(xDistance) > Math.Abs(yDistance) ? xDistance : yDistance;
+                    for (int x = diagonalDistance / Math.Abs(diagonalDistance); Math.Abs(x) < 9 - Math.Abs(diagonalDistance); x += x / Math.Abs(x))
+                    {
+                        if (PossibleMoves.Contains(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + x))
+                        {
+                            _possibleMoves.Add(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + x);
+                            break;
+                        }
+                    }
+                }
+                else // Orthogonal
+                {
+                    for (int x = xDistance / Math.Abs(xDistance); Math.Abs(x) < Math.Abs(xDistance); x += x / Math.Abs(x))
+                    {
+                        for (int y = yDistance / Math.Abs(yDistance); Math.Abs(y) < Math.Abs(yDistance); y += y / Math.Abs(y))
+                        {
+                            if (PossibleMoves.Contains(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + y))
+                            {
+                                _possibleMoves.Add(squarePrefix[x + myKing.squareLetterIndex] + myKing.squareNumber + y);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return _possibleMoves;
+        }
+        public static void SetKingsAttackers(string color)
+        {
+            Piece King = color == "White" ? GetWhiteKing() : GetBlackKing();
+            Piece Attacker = null;
+            if (color == "White") // Looking If White King is Under Attack
+            {
+                foreach (Piece p in Form1.BlackPieces)
+                {
+                    if (p.possibleMoves.Contains(King.square))
+                    {
+                        Attacker = p;
+                        blackIsUnderAttack = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                foreach (Piece p in Form1.WhitePieces)
+                {
+                    if (p.possibleMoves.Contains(King.square))
+                    {
+                        Attacker = p;
+                        whiteIsUnderAttack = true;
+                        break;
+                    }
+                }
+            }
+            if (Attacker == null)
+            {
+                whiteIsUnderAttack = false;
+                blackIsUnderAttack = false;
+            }
+            else
+            {
+                if (Attacker.color == "White") whiteIsUnderAttack = false;
+                else blackIsUnderAttack = false;
+            }
+            King.Attacker = Attacker;
         }
         public Piece AmIProtectingMyKing()
         {
@@ -102,9 +187,9 @@ namespace ChessBotDenemesi1
                 diagonalNumberDistance = squareNumber - myKing.squareNumber; // if this is negative then the king is on our down. positive = up
                 // If diagonalDistance > 1 then I gotta check my behind.
                 // If diagonalDistance == 1 then I gotta check only further away. And look for an enemy or an ally.
-                if(diagonalDistance == 1) // I gotta check only further away.
+                if (diagonalDistance == 1) // I gotta check only further away.
                 {
-                    for(int i = 1; i < 8; i++)
+                    for (int i = 1; i < 8; i++)
                     {
                         iX = diagonalLetterDistance > 0 ? i : -i; // This will be used for Square Letters.
                         iY = diagonalNumberDistance > 0 ? i : -i; // This will be used for Square Numbers.
@@ -118,7 +203,7 @@ namespace ChessBotDenemesi1
                         }
                     }
                 }
-                else if(squareLetterIndex == 0 || squareLetterIndex == 7 || squareNumber == 1 || squareNumber == 8) // I gotta check only behind.
+                else if (squareLetterIndex == 0 || squareLetterIndex == 7 || squareNumber == 1 || squareNumber == 8) // I gotta check only behind.
                 {
                     for (int i = 1; i < 8; i++)
                     {
@@ -167,170 +252,15 @@ namespace ChessBotDenemesi1
             }
             return null;
         }
-        public static List<Piece> IsKingUnderAttack(string color) // Returns Attackers
-        {
-            Piece King = color == "White" ? GetWhiteKing() : GetBlackKing();
-            List<Piece> Attackers = new List<Piece>();
-            if (color == "White") // Looking If White King is Under Attack
-            {
-                foreach (Piece p in Form1.BlackPieces)
-                {
-                    if (p.possibleMoves.Contains(King.square))
-                    {
-                        Attackers.Add(p);
-                        blackIsUnderAttack = true;
-                    }
-                }
-            }
-            else
-            {
-                foreach (Piece p in Form1.WhitePieces)
-                {
-                    if (p.possibleMoves.Contains(King.square))
-                    {
-                        Attackers.Add(p);
-                        whiteIsUnderAttack = true;
-                    }
-                }
-            }
-            if (Attackers.Count < 1)
-            {
-                whiteIsUnderAttack = false;
-                blackIsUnderAttack = false;
-                return null;
-            }
-            else
-            {
-                if (Attackers[0].color == "White") whiteIsUnderAttack = false;
-                else blackIsUnderAttack = false;
-            }
-            return Attackers;
-        }
-        /*public static Piece DoesAnyPieceProtectsKing(string direction, string colorOfKing) // Returns Protector
-        {
-            List<Piece> alliesOnTheDirection = new List<Piece>();
-            List<Piece> enemiesOnTheDirection = new List<Piece>();
-            List<Piece> enemyPieces = colorOfKing == "White" ? Form1.BlackPieces : Form1.WhitePieces;
-            Piece king = colorOfKing == "White" ? GetWhiteKing() : GetBlackKing();
-            int squareLetterIndex = 0;
-            for (int i = 0; i < squarePrefix.Length; i++) { if (squarePrefix[i] == king.squareLetter) squareLetterIndex = i; }
-            // Diagonals
-            if (direction == "RU") // Right Up
-            {
-                for(int i = 1; i < 8; i++)
-                {
-                    if (king.squareNumber + i > 8) break;
-                    if (squareLetterIndex + i > 7) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex + i] + (king.squareNumber + i));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            else if(direction == "LU") // Left Up
-            {
-                for (int i = 1; i < 8; i++)
-                {
-                    if (king.squareNumber + i > 8) break;
-                    if (squareLetterIndex - i < 0) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex - i] + (king.squareNumber + i));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            else if(direction == "RD") // Right Down
-            {
-                for (int i = 1; i < 8; i++)
-                {
-                    if (king.squareNumber - i < 1) break;
-                    if (squareLetterIndex + i > 7) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex + i] + (king.squareNumber - i));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            else if(direction == "LD") // Left Down
-            {
-                for (int i = 1; i < 8; i++)
-                {
-                    if (king.squareNumber - i < 1) break;
-                    if (squareLetterIndex - i < 0) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex - i] + (king.squareNumber - i));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            // Not Diagonals
-            else if(direction == "R") // Right
-            {
-                for (int i = 1; i < 8; i++)
-                {
-                    if (squareLetterIndex + i > 7) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex + i] + (king.squareNumber));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            else if(direction == "L") // Left
-            {
-                for (int i = 1; i < 8; i++)
-                {
-                    if (squareLetterIndex - i < 0) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex - i] + (king.squareNumber));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            else if(direction == "U") // Up
-            {
-                for (int i = 1; i < 8; i++)
-                {
-                    if (king.squareNumber + i > 8) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex] + (king.squareNumber + i));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            else // Down
-            {
-                for (int i = 1; i < 8; i++)
-                {
-                    if (king.squareNumber - i < 0) break;
-                    Piece pieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex] + (king.squareNumber - i));
-                    if (pieceOnTheSquare != null && (pieceOnTheSquare.type == "Rook" || pieceOnTheSquare.type == "Bishop" || pieceOnTheSquare.type == "Queen"))
-                    {
-                        if (pieceOnTheSquare.color == king.color) alliesOnTheDirection.Add(pieceOnTheSquare);
-                        else enemiesOnTheDirection.Add(pieceOnTheSquare);
-                    }
-                }
-            }
-            if (alliesOnTheDirection.Count == 1 && enemiesOnTheDirection.Count > 0) return alliesOnTheDirection[0];
-            return null;
-        }
-        */
         public static Piece IsAnyPieceOnThisSquare(string square) // Returns The Piece On The Square
         {
-            foreach (Piece p in Form1.AllPieces) { if (p.square == square) return p; }
+            foreach (Piece p in Form1.AllPieces)
+            {
+                if (p.square == square)
+                {
+                    return p;
+                }
+            }
             return null;
         }
         public List<string> GetMovesFromGoingRight()
@@ -394,6 +324,70 @@ namespace ChessBotDenemesi1
                     break;
                 }
                 else _possibleMoves.Add(squareLetter + k); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
+        }
+        public List<string> GetMovesFromGoingUpRight()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = 1; k < 9; k++)
+            {
+                if (squareNumber + k > 8 || squareLetterIndex + k > 7) break;
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex + k] + (squareNumber + k));
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[squareLetterIndex + k] + (squareNumber + k));
+                    break;
+                }
+                else _possibleMoves.Add(squarePrefix[squareLetterIndex + k] + (squareNumber + k)); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
+        }
+        public List<string> GetMovesFromGoingUpLeft()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = 1; k < 9; k++)
+            {
+                if (squareNumber + k > 8 || squareLetterIndex - k < 0) break;
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex - k] + (squareNumber + k));
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[squareLetterIndex - k] + (squareNumber + k));
+                    break;
+                }
+                else _possibleMoves.Add(squarePrefix[squareLetterIndex - k] + (squareNumber + k)); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
+        }
+        public List<string> GetMovesFromGoingDownRight()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = 1; k < 9; k++)
+            {
+                if (squareNumber - k < 1 || squareLetterIndex + k > 7) break;
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex + k] + (squareNumber - k));
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[squareLetterIndex + k] + (squareNumber - k));
+                    break;
+                }
+                else _possibleMoves.Add(squarePrefix[squareLetterIndex + k] + (squareNumber - k)); // If no piece on our way then its a possible move
+            }
+            return _possibleMoves;
+        }
+        public List<string> GetMovesFromGoingDownLeft()
+        {
+            List<string> _possibleMoves = new List<string>();
+            for (int k = 1; k < 9; k++)
+            {
+                if (squareNumber - k < 1 || squareLetterIndex - k < 0) break;
+                Piece PieceOnTheSquare = IsAnyPieceOnThisSquare(squarePrefix[squareLetterIndex - k] + (squareNumber - k));
+                if (PieceOnTheSquare != null) // If any Piece is on our way
+                {
+                    if (PieceOnTheSquare.color != color) _possibleMoves.Add(squarePrefix[squareLetterIndex - k] + (squareNumber - k));
+                    break;
+                }
+                else _possibleMoves.Add(squarePrefix[squareLetterIndex - k] + (squareNumber - k)); // If no piece on our way then its a possible move
             }
             return _possibleMoves;
         }

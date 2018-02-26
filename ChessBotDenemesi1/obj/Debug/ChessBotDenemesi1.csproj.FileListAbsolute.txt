@@ -1,0 +1,10 @@
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\obj\Debug\ChessBotDenemesi1.csprojResolveAssemblyReference.cache
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\obj\Debug\ChessBotDenemesi1.Form1.resources
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\obj\Debug\ChessBotDenemesi1.Properties.Resources.resources
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\obj\Debug\ChessBotDenemesi1.csproj.GenerateResource.Cache
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\obj\Debug\ChessBotDenemesi1.csproj.CoreCompileInputs.cache
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\bin\Debug\ChessBotDenemesi1.exe.config
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\bin\Debug\ChessBotDenemesi1.exe
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\bin\Debug\ChessBotDenemesi1.pdb
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\obj\Debug\ChessBotDenemesi1.exe
+C:\Users\Kullanici\source\repos\ChessBotDenemesi1\ChessBotDenemesi1\obj\Debug\ChessBotDenemesi1.pdb
